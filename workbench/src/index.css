@@ -1,0 +1,538 @@
+@import "tailwindcss";
+@import "@appica/ui-react/styles.css";
+
+@source "../node_modules/@appica/ui-react/dist";
+
+/*
+ * Stripe-classic blurple dual theme (light default, `.dark` override on
+ * <html>) — normative spec in DESIGN.md (Stripe-Classic-Blurple).
+ *
+ * Theming contract (Tailwind v4 runtime-switchable pattern):
+ *   - Raw values live in `:root` (light) and `.dark`, mirroring the same
+ *     names appica-ui internals read directly (var(--background), ...).
+ *   - `@theme inline` re-exposes them as Tailwind utilities; `inline` makes
+ *     utilities resolve the var at element scope, so swapping the `.dark`
+ *     class re-themes every utility without a rebuild.
+ *     only in :root do NOT generate utilities — always go through @theme.)
+ *
+ * Palette: classic Stripe — white canvas + blue-gray section tint
+ * (#f6f9fc), slate ink (#32325d / #525f7f / #8898aa), muted blurple accent
+ * (#6772e5, press #5469d4). No gradients, no ornamental fills: hierarchy
+ * comes from type, spacing, and slate-tinted hairlines.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces — white dominates; #f6f9fc is band/hover tint only */
+  --canvas: #f6f9fc;
+  --sidebar: #eef2f7;
+  --card: #ffffff;
+  --card-hover: #f6f9fc;
+  --background: #ffffff;
+  --background-subtle: #f6f9fc;
+  --background-muted: rgba(50, 50, 93, 0.08);
+  --background-strong: rgba(50, 50, 93, 0.12);
+  --background-inverse: #32325d;
+
+  /* Foreground — slate ink family, never pure black */
+  --foreground: #32325d;
+  --foreground-muted: #525f7f;
+  --foreground-subtle: #8898aa;
+  --foreground-strong: #32325d;
+  --foreground-emphasis: #32325d;
+  --foreground-intense: #32325d;
+  --foreground-inverse: #f6f9fc;
+
+  /* Hairlines — slate-tinted 1px lines carry hierarchy */
+  --border: rgba(50, 50, 93, 0.12);
+  --border-muted: rgba(50, 50, 93, 0.06);
+  --border-strong: rgba(50, 50, 93, 0.2);
+  --border-emphasis: rgba(50, 50, 93, 0.3);
+  --border-intense: rgba(50, 50, 93, 0.4);
+  --border-inverse: rgba(255, 255, 255, 0.12);
+
+  /* Accent (classic blurple) — one filled action per region */
+  --accent: #6772e5;
+  --accent-hover: #5469d4;
+  --accent-contrast: #ffffff;
+  --primary: #6772e5;
+  --primary-subtle: rgba(103, 114, 229, 0.08);
+  --primary-soft: rgba(103, 114, 229, 0.14);
+  --primary-muted: #5469d4;
+  --primary-strong: #5469d4;
+  --primary-foreground: #ffffff;
+  --focus-ring-primary: rgba(103, 114, 229, 0.4);
+
+  /* Status — text-grade, used as badge text not fills */
+  --success: #1b7a4e;
+  --warning: #9a6700;
+  --error: #cd3d64;
+
+  /* Elevation — ink-tinted, floating panels only */
+  --shadow-card: 0 1px 2px rgba(50, 53, 93, 0.04), 0 4px 16px rgba(50, 53, 93, 0.08);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --canvas: #0f1222;
+  --sidebar: #141931;
+  --card: #1a1f36;
+  --card-hover: #232948;
+  --background: #1a1f36;
+  --background-subtle: #232948;
+  --background-muted: rgba(230, 235, 241, 0.08);
+  --background-strong: rgba(230, 235, 241, 0.14);
+  --background-inverse: #f6f9fc;
+
+  --foreground: #e6ebf1;
+  --foreground-muted: #a5b0c2;
+  --foreground-subtle: #8898aa;
+  --foreground-strong: #e6ebf1;
+  --foreground-emphasis: #e6ebf1;
+  --foreground-intense: #ffffff;
+  --foreground-inverse: #1a1f36;
+
+  --border: rgba(230, 235, 241, 0.12);
+  --border-muted: rgba(230, 235, 241, 0.07);
+  --border-strong: rgba(230, 235, 241, 0.2);
+  --border-emphasis: rgba(230, 235, 241, 0.28);
+  --border-intense: rgba(230, 235, 241, 0.36);
+  --border-inverse: rgba(0, 0, 0, 0.2);
+
+  --accent: #7a85ff;
+  --accent-hover: #8f99ff;
+  --accent-contrast: #ffffff;
+  --primary: #7a85ff;
+  --primary-subtle: rgba(122, 133, 255, 0.16);
+  --primary-soft: rgba(122, 133, 255, 0.22);
+  --primary-muted: #8f99ff;
+  --primary-strong: #8f99ff;
+  --primary-foreground: #ffffff;
+  --focus-ring-primary: rgba(122, 133, 255, 0.45);
+
+  --success: #36c286;
+  --warning: #f5a623;
+  --error: #e05c7c;
+
+  --shadow-card: 0 1px 2px rgba(4, 6, 16, 0.35), 0 4px 16px rgba(4, 6, 16, 0.45);
+}
+
+@theme inline {
+  /* Surfaces */
+  --color-canvas: var(--canvas);
+  --color-sidebar: var(--sidebar);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-background-muted: var(--background-muted);
+  --color-background-strong: var(--background-strong);
+  --color-background-inverse: var(--background-inverse);
+
+  /* Foreground */
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-foreground-strong: var(--foreground-strong);
+  --color-foreground-emphasis: var(--foreground-emphasis);
+  --color-foreground-intense: var(--foreground-intense);
+  --color-foreground-inverse: var(--foreground-inverse);
+
+  /* Hairlines */
+  --color-border: var(--border);
+  --color-border-muted: var(--border-muted);
+  --color-border-strong: var(--border-strong);
+  --color-border-emphasis: var(--border-emphasis);
+  --color-border-intense: var(--border-intense);
+  --color-border-inverse: var(--border-inverse);
+
+  /* Accent */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-primary: var(--primary);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-muted: var(--primary-muted);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-focus-ring-primary: var(--focus-ring-primary);
+
+  /* Status */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  /* Elevation */
+  --shadow-card: var(--shadow-card);
+}
+
+@theme {
+  /*
+   * Type: system UI stack (SF Pro Text / PingFang SC native on Apple
+   * devices); other platforms fall back to the self-hosted Noto Sans SC
+   * webfont (sliced via unicode-range, loaded in app/layout.tsx).
+   */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Noto Sans SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Cascadia Mono",
+    monospace;
+
+  /* Radii — Stripe-classic plain rectangles (spec: DESIGN.md rounded.*) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-card: 8px;
+  --radius-pill: 9999px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Interaction baseline — keyboard focus ring + press
+   feedback for every control, declared once at base layer so hand-rolled
+   native buttons can't miss it. Components may override, not remove. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--focus-ring-primary);
+    outline-offset: 2px;
+  }
+  button:active {
+    scale: 0.98;
+  }
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--foreground);
+  font-feature-settings: "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbar — thin, adaptive */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 5px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-intense);
+  background-clip: content-box;
+}
+
+/* Card hover fill */
+.card-hover {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.card-hover:hover {
+  background-color: var(--card-hover);
+}
+
+/* Action button that appears on hover */
+.card-play-btn {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover:hover .card-play-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered enter animation */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.stagger-in {
+  animation: stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Score bar fill animation */
+@keyframes score-fill {
+  from {
+    width: 0;
+  }
+}
+.score-fill {
+  animation: score-fill 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Thinking ring — spinning arc while the agent works (width-agnostic, GPU-friendly) */
+@keyframes think-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.think-ring {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 40%, var(--accent) 100%);
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 2.5px),
+    #000 calc(100% - 2px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 2.5px),
+    #000 calc(100% - 2px)
+  );
+  animation: think-spin 0.9s linear infinite;
+}
+
+/* Marquee — indeterminate accent sweep (composer top edge while running).
+   Pill-shaped and inset by the card radius (16px) so it spans only the
+   straight part of the rounded top edge — hugs the dialog, never pokes
+   past the corner curves. */
+@keyframes marquee-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+.marquee-line {
+  position: absolute;
+  top: -1px;
+  inset-inline: 16px;
+  height: 2px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.marquee-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 35%;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent),
+    var(--accent-hover),
+    transparent
+  );
+  animation: marquee-sweep 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-in,
+  .score-fill,
+  .card-play-btn,
+  .think-ring,
+  .marquee-line {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  button:active {
+    scale: none;
+  }
+}
+
+/* Markdown body — Codex-style rendered agent output */
+.md-body {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--foreground);
+  overflow-wrap: break-word;
+}
+.md-body > :first-child {
+  margin-top: 0;
+}
+.md-body > :last-child {
+  margin-bottom: 0;
+}
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4 {
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--foreground);
+  margin: 1.4em 0 0.5em;
+}
+.md-body h1 {
+  font-size: 1.25em;
+}
+.md-body h2 {
+  font-size: 1.15em;
+}
+.md-body h3,
+.md-body h4 {
+  font-size: 1.05em;
+}
+.md-body p {
+  margin: 0.6em 0;
+}
+.md-body ul,
+.md-body ol {
+  margin: 0.6em 0;
+  padding-left: 1.4em;
+}
+.md-body ul {
+  list-style: disc;
+}
+.md-body ol {
+  list-style: decimal;
+}
+.md-body li {
+  margin: 0.25em 0;
+}
+.md-body li::marker {
+  color: var(--foreground-subtle);
+}
+.md-body strong {
+  font-weight: 600;
+}
+.md-body a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.md-body a:hover {
+  text-decoration: underline;
+}
+.md-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--background-muted);
+  border-radius: 5px;
+  padding: 0.15em 0.4em;
+}
+.md-body pre {
+  background: var(--background-muted);
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  padding: 0.75em 1em;
+  overflow-x: auto;
+  margin: 0.75em 0;
+}
+.md-body pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+/* Syntax highlighting (rehype-highlight) — muted Apple-flavored token
+   palette, dual theme via the .dark cascade. Scoped to .md-body only. */
+.md-body .hljs-keyword,
+.md-body .hljs-selector-tag,
+.md-body .hljs-literal,
+.md-body .hljs-section {
+  color: #ad3da4;
+}
+.md-body .hljs-string,
+.md-body .hljs-attr,
+.md-body .hljs-selector-attr,
+.md-body .hljs-addition {
+  color: #1a7f37;
+}
+.md-body .hljs-number,
+.md-body .hljs-symbol,
+.md-body .hljs-bullet {
+  color: #b35900;
+}
+.md-body .hljs-title,
+.md-body .hljs-name,
+.md-body .hljs-selector-id,
+.md-body .hljs-selector-class {
+  color: #0550ae;
+}
+.md-body .hljs-comment,
+.md-body .hljs-quote,
+.md-body .hljs-deletion {
+  color: var(--foreground-subtle);
+  font-style: italic;
+}
+.md-body .hljs-built_in,
+.md-body .hljs-type {
+  color: #953800;
+}
+.dark .md-body .hljs-keyword,
+.dark .md-body .hljs-selector-tag,
+.dark .md-body .hljs-literal,
+.dark .md-body .hljs-section {
+  color: #d2a8ff;
+}
+.dark .md-body .hljs-string,
+.dark .md-body .hljs-attr,
+.dark .md-body .hljs-selector-attr,
+.dark .md-body .hljs-addition {
+  color: #7ee787;
+}
+.dark .md-body .hljs-number,
+.dark .md-body .hljs-symbol,
+.dark .md-body .hljs-bullet {
+  color: #ffa657;
+}
+.dark .md-body .hljs-title,
+.dark .md-body .hljs-name,
+.dark .md-body .hljs-selector-id,
+.dark .md-body .hljs-selector-class {
+  color: #79c0ff;
+}
+.dark .md-body .hljs-comment,
+.dark .md-body .hljs-quote,
+.dark .md-body .hljs-deletion {
+  color: var(--foreground-subtle);
+}
+.dark .md-body .hljs-built_in,
+.dark .md-body .hljs-type {
+  color: #ffa198;
+}
+.md-body blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding-left: 1em;
+  margin: 0.75em 0;
+  color: var(--foreground-muted);
+}
+.md-body hr {
+  border: 0;
+  border-top: 1px solid var(--border-muted);
+  margin: 1.2em 0;
+}
+.md-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0;
+  font-size: 13px;
+}
+.md-body th,
+.md-body td {
+  border: 1px solid var(--border-muted);
+  padding: 0.45em 0.7em;
+  text-align: left;
+}
+.md-body th {
+  background: var(--background-subtle);
+  font-weight: 600;
+}

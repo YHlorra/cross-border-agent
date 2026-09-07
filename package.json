@@ -1,0 +1,23 @@
+{
+  "name": "cross-border",
+  "version": "0.1.0",
+  "private": true,
+  "description": "根包仅作脚本载体(workbench/ bff/ 各自独立工程;Python agent 见 pyproject.toml)",
+  "scripts": {
+    "test": "cd workbench && npm test && cd ../bff && npm test",
+    "build": "cd workbench && npm run build",
+    "dev:bff": "cd bff && npm run dev",
+    "dev:workbench": "cd workbench && npm run dev",
+    "start": "cd bff && npm start",
+    "smoke:p11": "node scripts/p11_ui_governance.mjs",
+    "smoke:p12": "node scripts/p12_single_chat_ia_smoke.mjs",
+    "smoke:p13": "node scripts/p13_multi_session_parallel.mjs",
+    "smoke:p14": "node scripts/p14_session_context_menu.mjs",
+    "smoke:p15": "node scripts/p15_ui_refresh_smoke.mjs",
+    "smoke:p16": "node scripts/p16_queue_draft_smoke.mjs",
+    "smoke:p17": "node scripts/p17_general_chat_smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.1"
+  }
+}

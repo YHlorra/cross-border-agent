@@ -1,0 +1,19 @@
+{
+  "name": "crossborder-db",
+  "private": true,
+  "description": "Schema 真相源(Drizzle)——Python pg_store 只消费迁移结果,不自建表",
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.44.1",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.0"
+  }
+}

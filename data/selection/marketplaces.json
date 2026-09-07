@@ -1,0 +1,51 @@
+{
+  "US": {
+    "format": {
+      "title_max_chars": 75,
+      "bullet_count": 5,
+      "bullet_min_chars": 10,
+      "bullet_max_chars": 255,
+      "description_max_chars": 2000,
+      "search_terms_max_bytes": 250,
+      "title_forbidden_chars": ["!", "$", "?", "_", "{", "}", "^", "¬", "¦"],
+      "forbidden_phrases": [
+        "free shipping",
+        "best seller",
+        "bestseller",
+        "#1",
+        "top rated",
+        "hot item",
+        "money-back guarantee",
+        "money back",
+        "risk-free",
+        "risk free",
+        "fda approved",
+        "50% off",
+        "on sale",
+        "best price",
+        "ships next day",
+        "prime eligible",
+        "limited stock",
+        "selling fast",
+        "lifetime warranty"
+      ],
+      "subjective_terms": [
+        "amazing",
+        "greatest",
+        "perfect",
+        "incredible",
+        "revolutionary",
+        "game-changing",
+        "best ever",
+        "ultimate"
+      ]
+    },
+    "profile": {
+      "marketplace_id": "ATVPDKIKX0DER",
+      "language_tag": "en_US",
+      "currency_code": "USD",
+      "condition_default": "new_new",
+      "fulfillment_channel_default": "DEFAULT"
+    }
+  }
+}

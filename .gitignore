@@ -1,0 +1,85 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+
+# ===== 运行时状态与密钥（不含敏感信息，缺失时自动回退默认值） =====
+.env
+.env.local
+.env.*.local
+data/selection/memory.db
+data/selection/providers.json
+data/selection/model_config.json
+data/selection/spapi.json
+
+*.log
+
+# ===== 开发文档：只追踪代码 + 公共门面例外 =====
+# 根目录锚定，不影响 src/agent/prompts/**/*.md（提示词是运行时资产，属于代码）
+/*.md
+!/README.md
+!/README.en.md
+/docs/*
+/public-sync.json
+/adr/
+/llm-config-design.html
+/用中文输出
+/.workbuddy/
+/.zcode/
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db
+
+# ===== 工具本地索引 =====
+/.codegraph/
+
+# ===== 临时构建产物 / 工具会话 / 根目录截图 =====
+/.next.bak.*/
+/.omc/
+/.tmp-test/
+/browser_start.png
+
+# ===== 参考项目快照（外部仓库，不入库）=====
+/reference_projects/
+
+# ===== 运行时产物（agent pid / 工具会话）=====
+/data/selection/*.pid
+/.commandcode/
+
+# OpenSpec 变更集（开发文档，不入库）
+/openspec/
+
+# crossborder local postgres (postgres-data-platform)
+data/pgdata/
+data/pg.log
+
+# workbench 构建产物
+workbench/dist/
+
+# 语料数据资产（Git 只追踪代码）
+data/selection/memory.db.bak-*
+data/corpus/corpus.db
+data/corpus/raw/
+data/run_*.ndjson
+data/diff_c4.txt
+data/live-debug.png
+data/_approval_*.snippet
+# dev 启动日志/调试产物（重启即重生成）
+data/*.log
+data/*.ndjson
+data/diff_*.txt
+data/live-debug.png
+data/_*.snippet
+# 语料库——本地运行资产（不作为 Git 追踪内容）
+data/corpus/meta/
+data/corpus/README.md
