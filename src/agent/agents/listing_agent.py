@@ -106,7 +106,10 @@ def compose_listing_system_prompt(tools: list[Any]) -> str:
         "2. 收到 hard_failed=true 时按 issues 修改后再提交（最多 3 次）。\n"
         "3. 校验通过（hard_failed=false）后，输出一行最终确认："
         "`DRAFT_OK`，不要再提交。\n"
-        "4. 候选数据在市场上下文里；搜索词禁止出现竞品品牌。"
+        "4. 候选数据在市场上下文里；搜索词禁止出现竞品品牌。\n"
+        "5. product_type 必填——首次提交若漏写会被 hard_fail 报"
+        "product_type_missing，按惯例从商品品类推断一个最贴近的亚马逊产品"
+        "类型关键词（大写下划线式），不要写 human-readable 名。"
     )
     # 生图 skill 条件注入：仅当生图工具实际
     # 注册（HUIWA_API_KEY 存在）时才注入六要素方法论——没有生图工具时
@@ -354,7 +357,10 @@ async def stream_run_listing_loop_tokens(
         "2. 收到 hard_failed=true 时按 issues 修改后再提交（最多 3 次）。\n"
         "3. 校验通过（hard_failed=false）后，输出一行最终确认："
         "`DRAFT_OK`，不要再提交。\n"
-        "4. 候选数据在市场上下文里；搜索词禁止出现竞品品牌。"
+        "4. 候选数据在市场上下文里；搜索词禁止出现竞品品牌。\n"
+        "5. product_type 必填——首次提交若漏写会被 hard_fail 报"
+        "product_type_missing，按惯例从商品品类推断一个最贴近的亚马逊产品"
+        "类型关键词（大写下划线式），不要写 human-readable 名。"
     )
 
     events_queue: asyncio.Queue = asyncio.Queue()

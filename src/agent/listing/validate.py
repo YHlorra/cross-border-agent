@@ -206,6 +206,15 @@ def validate_listing(
     fixed.bullet_point = _fix_bullets(fixed.bullet_point, fmt, issues)
     fixed.product_description = _fix_description(fixed.product_description, fmt, issues)
 
+    # product_type 是亚马逊 SP-API 上传层的必填分类键, 缺失会让上传返 400。
+    # LLM 经常漏填 (契约里只写了示例, 没强约束), 校验层不能静默替它造一个
+    # (不同品类 schema 完全不同, 猜错的代价比显式报错大)。只报不改。
+    if not (fixed.product_type or "").strip():
+        _hard(
+            issues, "product_type", "product_type_missing",
+            "product_type 缺失 — SP-API 上传必填, 需重生成或人工指定 (大写下划线式, 如 PET_FEEDER)",
+        )
+
     body = " ".join([fixed.item_name, *fixed.bullet_point, fixed.product_description])
     body_words = set(body.lower().split())
     fixed.generic_keyword = _fix_keywords(

@@ -106,6 +106,9 @@ post("/api/listing/export", "/listing/export");
 post("/api/listing/regen-field", "/listing/regen-field");
 ndjson("/api/listing/run", "/listing/run");
 get("/api/listing/runs", "/listing/runs");
+app.get("/api/listing/runs/:run_id", (c: any) =>
+  passthroughJson(c, `/listing/runs/${c.req.param("run_id")}`),
+);
 app.delete("/api/listing/runs/:run_id", (c: any) =>
   passthroughJson(c, `/listing/runs/${c.req.param("run_id")}`),
 );

@@ -477,10 +477,43 @@ function ListingDetailDrawer({
           ) : (
             <div className="space-y-5">
               {detail.listing?.hard_failed && (
-                <p className="rounded-lg border border-error/40 bg-error/5 px-3 py-2 text-xs text-error">
-                  存在硬校验失败字段——建议在对话中重新生成后再导出。
-                </p>
+                <div
+                  data-testid="hard-fail-banner"
+                  className="space-y-1.5 rounded-lg border border-error/40 bg-error/5 px-3 py-2 text-xs"
+                >
+                  <p className="font-medium text-error">
+                    存在硬校验失败字段——建议在对话中重新生成后再导出。
+                  </p>
+                  {(detail.listing.issues ?? [])
+                    .filter((i) => i.severity === "hard_fail")
+                    .map((i, idx) => (
+                      <p key={idx} className="leading-relaxed text-error">
+                        · <span className="font-mono">{i.field}</span>
+                        {i.code ? ` (${i.code})` : ""} — {i.message}
+                      </p>
+                    ))}
+                </div>
               )}
+              {(() => {
+                const auto = (detail.listing?.issues ?? []).filter(
+                  (i) => i.severity === "auto_fixed",
+                );
+                if (auto.length === 0) return null;
+                return (
+                  <div
+                    data-testid="auto-fixed-banner"
+                    className="space-y-1.5 rounded-lg border border-info/30 bg-info/5 px-3 py-2 text-xs text-foreground-muted"
+                  >
+                    <p className="font-medium text-info">自动修复（已生效）</p>
+                    {auto.map((i, idx) => (
+                      <p key={idx} className="leading-relaxed">
+                        · <span className="font-mono">{i.field}</span>
+                        {i.code ? ` (${i.code})` : ""} — {i.message}
+                      </p>
+                    ))}
+                  </div>
+                );
+              })()}
               <ReadonlySection
                 label="商品标题"
                 value={draft.item_name}
