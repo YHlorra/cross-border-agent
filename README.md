@@ -1,14 +1,16 @@
 # cross-border-agent
 
-> AI 驱动的跨境电商选品与 Listing 工具——把"看 1688 货源 + 扫亚马逊竞品 + 写本地化文案"三步合并成一条多智能体流水线。
+> 个人测试项目——内置约 2 万条亚马逊产品 mock 数据，主要用于测试中间件和智能体编排相关流程；不涉及真实生产环境，也未打通亚马逊或 1688 等平台。后续可在此基础上扩展接入各 ERP 和电商平台的 MCP 与 API。
 
 [中文](#) · [English](README.en.md)
 
 ## 这是什么
 
-cross-border-agent 是一个面向个人跨境卖家的多智能体工作台，由三个 LangGraph agent 组成：
+本项目为个人测试项目，内置约 2 万条亚马逊产品 mock 数据，主要用于测试中间件和智能体编排相关流程。不涉及真实生产环境，也未打通亚马逊或 1688 等平台。后续可在此基础上扩展接入各 ERP 和电商平台的 MCP 与 API。
 
-- **选品（Selection）**：用自然语言描述想查的品类，agent 自主检索 1688 货源和亚马逊竞品数据，规则初筛 + 五维评分，输出带评分与理由的选品报告
+由三个 LangGraph agent 组成：
+
+- **选品（Selection）**：用自然语言描述想查的品类，agent 基于内置 mock 语料做规则初筛 + 五维评分，输出带评分与理由的选品报告
 - **Listing 生成（Listing Copy）**：给定一个选中的产品，agent 生成目标市场可发布的英文/中文 listing 文案（标题、五点描述、关键词）
 - **通用对话（General Chat）**：日常查询走通用 agent；选品与 listing 是它的两个工具——由模型按用户意图自主决定何时调用
 
@@ -22,7 +24,7 @@ cross-border-agent 是一个面向个人跨境卖家的多智能体工作台，�
 > /选品  空气炸锅 200 元内 厨房小家电
 
 [ skill 注入：选品方法论 + run_selection 工具 ]
-▶ 检索 1688 货源 ...
+▶ 检索内置 mock 语料 ...
 ▶ 预筛 47 条候选 ...
 ▶ 5 维评分：销量 / 利润空间 / 竞品密度 / 物流 / 平台合规
 ✓ 报告：3 条推荐
@@ -36,7 +38,7 @@ cross-border-agent 是一个面向个人跨境卖家的多智能体工作台，�
 > 给 1 号起草一个 Amazon US listing
 
 [ skill 注入：Listing 文案方法论 + run_listing 工具 ]
-▶ 抓取竞品 listing 前 10 名 ...
+▶ 从语料中提取竞品 listing 前 10 名 ...
 ▶ 抽取卖点关键词 ...
 ✓ 草稿入列表（侧栏「列表」可继续编辑）
 
@@ -62,7 +64,7 @@ cross-border-agent 是一个面向个人跨境卖家的多智能体工作台，�
 - **Thinking 摘要 + 工具进度**逐步流式呈现
 
 ### 数据层
-- **PostgreSQL + pgvector**：28k 商品语料，规则初筛 + 向量检索
+- **PostgreSQL + pgvector**：约 2 万条亚马逊产品 mock 语料，规则初筛 + 向量检索
 - **适配器模式**：`ProductDataAdapter` 解耦数据源（当前 PG-only）
 - **持久化记忆**：memory graph 跨会话保留用户偏好与实体关系
 - **平台规则硬约束**：Amazon 禁用的合规词与差评反链已硬接入 marketplaces.json → 触发即 BLOCKER，不静默改写
@@ -182,7 +184,8 @@ LLM_API_KEY=sk-...
 ## 已知边界
 
 - **必须自行提供 LLM_API_KEY**——本项目是真实模型驱动，不带 mock 兜底
-- **语料规模 28k 商品**——本地 PG，非爬虫实时；覆盖面取决于你的 ETL
+- **语料规模约 2 万条亚马逊产品 mock 数据**——本地 PG，非真实平台数据；覆盖面取决于你的 ETL
+- **未对接真实平台**——亚马逊 / 1688 / TikTok Shop 等电商平台均未打通，所有「货源价 / 竞品售价 / 平台规则」均来自内置 mock 语料或硬编码规则表；可作为后续接入各 ERP / 平台 MCP 与 API 的基线
 - **当前覆盖**：选品 + listing 两条产品线；定价、广告、客服、订单等模块按阶段推进中
 - **平台规则硬约束**：Amazon 禁用的合规词与差评反链已硬接入 marketplaces.json → 触发即 BLOCKER，不静默改写
 - **不要把真实 `.env` / `providers.json` 提交到公开仓库**——`.env*` 与 `data/selection/providers.json` 已被 `.gitignore` 保护
@@ -216,3 +219,48 @@ LLM_API_KEY=sk-...
 ## License
 
 MIT
+
+## 致谢
+
+本项目建立在开源社区的肩膀之上。所用到的关键组件与灵感来源，按角色分组列出，向作者与维护者致以敬意。
+
+### 核心运行时
+
+- **LangGraph / LangChain**（LangChain 团队）—— LangGraph 1.x 状态机驱动整个 agent 编排；`create_agent` 是 LangChain 1.x 的入口
+- **Pydantic**（Samuel Colvin 等）—— 结构化输出与配置校验的事实标准
+- **PostgreSQL + pgvector**（PostgreSQL 全球开发组 / pgvector 维护者）—— 语料存储与向量检索
+- **aiohttp**（aiohttp 团队）—— agent 进程内部异步 HTTP 客户端
+
+### 工作台 / BFF
+
+- **React + react-dom**（Meta Platforms 与社区）—— UI 框架
+- **Vite**（Evan You 与 Vite 团队）—— 开发服务器与生产构建
+- **Hono + @hono/node-server**（Yusuke Wada 与 Hono 团队）—— BFF 框架
+- **TanStack Query**（Tanner Linsley 与 TanStack 团队）—— 服务端状态管理
+- **Ant Design + @ant-design/pro-components**（蚂蚁集团与社区）—— 后台与管理面组件库
+- **Appica UI**（[@appica-dev/appica-ui](https://github.com/appica-dev/appica-ui)）—— 前端 UI 组件库
+- **ECharts**（Apache ECharts 团队）—— 报告图表
+- **react-markdown + remark-gfm + rehype-highlight**—— Markdown 渲染与代码高亮
+
+### 可观测性与持久化执行
+
+- **Langfuse**（Langfuse 团队）—— LLM trace 与 token 用量观测
+- **DBOS**（DBOS 团队）—— 节点级 durable execution
+
+### 测试与开发工具
+
+- **pytest + pytest-asyncio**—— Python 测试栈
+- **Vitest**（Vitest 团队）—— workbench / bff 单测
+- **Playwright**（Microsoft）—— E2E 冒烟脚本
+- **TypeScript + tsx**—— 类型系统与开发态 Node 运行时
+- **Tailwind CSS**（Tailwind Labs）—— 工作台样式底座
+
+### 方法论借鉴
+
+`src/agent/prompts/skills/` 下的 5 个领域方法论 skill（选品 / Listing 文案 / 平台规则 / 差评反链 / 生图）的部分写法与社区公开的电商 prompt 资料同源，特别感谢以下参考仓库的作者（仅做方法论学习，未复制其源代码）：
+
+- [`listforge/prompts`](https://github.com/listforge/prompts) · [`nexscope/amazon-skills`](https://github.com/nexscope/amazon-skills) —— Listing 文案 / 平台规则方法论的主要参考
+- [`openai/codex`](https://github.com/openai/codex) —— chat-first 工作台 / 多 session 并行 / 工具即能力等工程范式的对标
+- [`upsidelab/enthusiast`](https://github.com/upsidelab/enthusiast) —— LangChain + 多 agent 编排思路的早期参照
+
+如果本项目对您或您的项目有所帮助，欢迎 star 反馈。

@@ -1,14 +1,16 @@
 # cross-border-agent
 
-> AI-driven product sourcing and listing tool for cross-border e-commerce. Combines "scan 1688 supply + scan Amazon competition + write localized copy" into one multi-agent pipeline.
+> Personal testing project — built-in ~20k Amazon product mock data, primarily used for exercising middleware and multi-agent orchestration flows. Not a production environment; no real Amazon/1688 integration. Intended as a baseline that can later be extended with ERP and marketplace MCP / API surfaces.
 
 [中文](README.md) · [English](#)
 
 ## What it is
 
-cross-border-agent is a multi-agent workbench for individual cross-border sellers, composed of three LangGraph agents:
+This is a personal testing project — built-in ~20k Amazon product mock data, used for testing middleware and agent orchestration flows. It does not run against a production environment, nor is it wired up to real Amazon or 1688 platforms. The codebase is intended as a baseline that can later be extended to connect ERP systems and marketplace MCP / API surfaces.
 
-- **Selection** — describe the product category in natural language; the agent retrieves 1688 supply and Amazon competition data, runs rule pre-filtering + 5-dimension scoring, and outputs a sourcing report with scores and rationale
+Composed of three LangGraph agents:
+
+- **Selection** — describe the product category in natural language; the agent runs rule pre-filtering + 5-dimension scoring against the built-in mock corpus and outputs a sourcing report with scores and rationale
 - **Listing copy** — given a selected product, the agent generates marketplace-ready English/Chinese listing copy (title, five bullets, keywords)
 - **General chat** — day-to-day queries route through the general agent; selection and listing are its two tools, called by the model based on user intent
 
@@ -22,7 +24,7 @@ The workbench is chat-first: every capability is invoked from the input box — 
 > /选品  空气炸锅 200 元内 厨房小家电
 
 [ skill injected: selection methodology + run_selection tool ]
-▶ retrieving 1688 supply ...
+▶ querying the built-in mock corpus ...
 ▶ pre-filtering 47 candidates ...
 ▶ scoring on 5 dimensions: sales / margin / competition density / logistics / platform compliance
 ✓ report: 3 recommendations
@@ -36,7 +38,7 @@ The workbench is chat-first: every capability is invoked from the input box — 
 > draft an Amazon US listing for item 1
 
 [ skill injected: listing copy methodology + run_listing tool ]
-▶ scraping top 10 competitor listings ...
+▶ pulling top 10 competitor listings from the corpus ...
 ▶ extracting selling-point keywords ...
 ✓ draft saved to listings (edit further in the sidebar `listings` route)
 
@@ -62,7 +64,7 @@ The sidebar keeps every session; clicking one replays the event stream and resum
 - **Streaming thinking summary + tool progress**
 
 ### Data layer
-- **PostgreSQL + pgvector** — 28k product corpus, rule pre-filter + vector retrieval
+- **PostgreSQL + pgvector** — ~20k Amazon product mock corpus, rule pre-filter + vector retrieval
 - **Adapter pattern** — `ProductDataAdapter` decouples data sources (currently PG-only)
 - **Persistent memory** — memory graph preserves user preferences and entity relationships across sessions
 - **Hard platform rules** — Amazon compliance terms and review-deflection links are baked into `marketplaces.json`; triggers become BLOCKERs, never silent rewrites
@@ -182,7 +184,8 @@ LLM_API_KEY=sk-...
 ## Known limits
 
 - **You must supply your own `LLM_API_KEY`** — the project runs against real models; no mock fallback
-- **28k product corpus** — local PG, not real-time scraping; coverage depends on your ETL
+- **~20k Amazon product mock corpus** — local PG, not real platform data; coverage depends on your ETL
+- **No real-platform integration** — Amazon / 1688 / TikTok Shop etc. are not wired up; every "supply price / competitor price / platform rule" comes from the built-in mock corpus or a hardcoded rule table. The codebase is intended as a baseline for future ERP / marketplace MCP and API extensions
 - **Current scope** — sourcing + listing only; pricing, ads, support, orders are upcoming phases
 - **Hard platform rules** — Amazon compliance terms and review-deflection links in `marketplaces.json` trigger BLOCKERs, never silent rewrites
 - **Do not commit real `.env` / `providers.json`** — both are covered by `.gitignore`
@@ -216,3 +219,48 @@ The project ships with `AGENTS.md` (project workflow rules) and `src/agent/promp
 ## License
 
 MIT
+
+## Acknowledgments
+
+This project stands on the shoulders of the open-source community. The key components and inspirations used here are listed below by role — sincere thanks to the authors and maintainers.
+
+### Core runtime
+
+- **LangGraph / LangChain** (LangChain team) — LangGraph 1.x state machine drives the entire agent orchestration; `create_agent` is the entry point of LangChain 1.x
+- **Pydantic** (Samuel Colvin et al.) — the de facto standard for structured outputs and config validation
+- **PostgreSQL + pgvector** (PostgreSQL global development group / pgvector maintainers) — corpus storage and vector retrieval
+- **aiohttp** (aiohttp team) — async HTTP client inside the agent process
+
+### Workbench / BFF
+
+- **React + react-dom** (Meta Platforms and the community) — UI framework
+- **Vite** (Evan You and the Vite team) — dev server and production build
+- **Hono + @hono/node-server** (Yusuke Wada and the Hono team) — BFF framework
+- **TanStack Query** (Tanner Linsley and the TanStack team) — server-state management
+- **Ant Design + @ant-design/pro-components** (Ant Group and the community) — admin and console components
+- **Appica UI** ([@appica-dev/appica-ui](https://github.com/appica-dev/appica-ui)) — frontend UI component library
+- **ECharts** (Apache ECharts team) — report charts
+- **react-markdown + remark-gfm + rehype-highlight** — Markdown rendering and code highlighting
+
+### Observability and durable execution
+
+- **Langfuse** (Langfuse team) — LLM tracing and token-usage observability
+- **DBOS** (DBOS team) — per-node durable execution
+
+### Testing and developer tooling
+
+- **pytest + pytest-asyncio** — Python test stack
+- **Vitest** (Vitest team) — workbench / bff unit tests
+- **Playwright** (Microsoft) — E2E smoke scripts
+- **TypeScript + tsx** — type system and dev-time Node runtime
+- **Tailwind CSS** (Tailwind Labs) — workbench styling base
+
+### Methodology inspirations
+
+The five domain-methodology skills under `src/agent/prompts/skills/` (selection / listing copy / platform rules / review mining / image generation) draw on publicly shared e-commerce prompt resources. Special thanks to the authors of the following reference repositories (methodology study only — no source code is copied):
+
+- [`listforge/prompts`](https://github.com/listforge/prompts) · [`nexscope/amazon-skills`](https://github.com/nexscope/amazon-skills) — primary references for listing copy / platform-rule methodology
+- [`openai/codex`](https://github.com/openai/codex) — the engineering benchmark for the chat-first workbench, parallel multi-session, and "tools as capabilities" patterns
+- [`upsidelab/enthusiast`](https://github.com/upsidelab/enthusiast) — early reference for LangChain + multi-agent orchestration thinking
+
+If this project is useful to you or your work, a star would be the most appreciated feedback.
